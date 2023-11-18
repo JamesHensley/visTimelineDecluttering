@@ -1,0 +1,42 @@
+:root {
+    --body-width: 100vw;
+    --body-height: 100vh;
+
+    --app-window-width: calc(var(--body-width) - 2rem);
+    --app-window-height: calc(var(--body-height) - 2rem);
+
+    --time-line-width: calc(var(--app-window-width) - 0.25rem);
+    --time-line-height: calc((var(--app-window-height) - 0.25rem) * 0.5);
+
+    --events-area-width: calc(var(--app-window-width) - 0.25rem);
+    --events-area-height: calc((var(--app-window-height) - 0.25rem) * 0.5);
+}
+
+body {
+    margin: 0px;
+    padding: 0px;
+    overflow: hidden;
+}
+
+.bordered {
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 0.25rem;
+}
+
+.appWindow {
+    width: var(--app-window-width);
+    height: var(--app-window-height);
+    margin: 0.5rem;
+    padding: 0.5rem;
+    overflow: hidden;
+}
+
+.timelineArea {
+    width: var(--time-line-width);
+    height: var(--time-line-height);
+}
+
+.eventsArea {
+    width: var(--events-area-width);
+    height: var(--events-area-height);
+}
