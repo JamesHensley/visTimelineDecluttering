@@ -26,7 +26,7 @@ const item = (data) => {
         }
     })();
 
-    return {
+    return Object.assign({
         id: data.id,
         content: data.content,
         start: dateStart,
@@ -39,7 +39,8 @@ const item = (data) => {
 
         appId: data.appId,
         appType: data.appType,
-    }
+        linkedEventId: data.linkedEventId,
+    }, dateEnd ? { end: dateEnd } : {});
 }
 
 const timeLine = (props) => {
@@ -49,8 +50,8 @@ const timeLine = (props) => {
     const timelineRef = new window['vis'].Timeline(props.container, _items, _groups, props.options);
 
     const refreshTimeLine = () => {
-        declutter().then(() => timelineRef.redraw());
-        // declutter();
+        // declutter().then(() => timelineRef.redraw());
+        declutter();
     }
 
     const declutter = () => {
@@ -73,19 +74,23 @@ const timeLine = (props) => {
 
                 // Go through each event in the group and assign a subgroupId for wherever this fits
                 events.forEach(event => {
-                    const eventOffset = ((event.start.getTime() - grpStart) / oneDay);
-                    const eventLength = Math.ceil((event.end.getTime() - event.start.getTime()) / oneDay);
+                    if (event.end) {
+                        const eventOffset = ((event.start.getTime() - grpStart) / oneDay);
+                        const eventLength = Math.ceil((event.end.getTime() - event.start.getTime()) / oneDay);
 
-                    const subGroupRef = subGroups.find(f => {
-                        return f.slice(eventOffset, eventOffset + eventLength).reduce((t, n) => t && n == undefined, true)
-                    }) ?? buildNewSubGrp();
+                        const subGroupRef = subGroups.find(f => {
+                            return f.slice(eventOffset, eventOffset + eventLength).reduce((t, n) => t && n == undefined, true)
+                        }) ?? buildNewSubGrp();
 
-                    // Assign something to the subgroup elements to mark them as "inUse" for processing in future iterations
-                    //   Could be anything, we don't care as long as it's not undefined
-                    subGroupRef.splice(eventOffset, eventLength, ...Array.from(Array(eventLength)).map(m => event.id));
-
-                    // Assign the subgroup for this event
-                    event.subgroup = subGroups.findIndex(f => f == subGroupRef);
+                        // Assign something to the subgroup elements to mark them as "inUse" for processing in future iterations
+                        //   Could be anything, we don't care as long as it's not undefined
+                        subGroupRef.splice(eventOffset, eventLength, ...Array.from(Array(eventLength)).map(m => event.appId));
+                        // Assign the subgroup for this event
+                        event.subgroup = subGroups.findIndex(f => f == subGroupRef);
+                    }
+                    else {
+                        event.subgroup = subGroups.findIndex(f => f.some(s => s == event.linkedEventId));
+                    }
                 });
 
                 return events;
@@ -94,7 +99,7 @@ const timeLine = (props) => {
             const updatedEvents = _groups.get()
             .filter(f => grpItems(f).length > 0)
             .reduce((t,n) => [].concat.apply(t, groupInfoFunc(n, grpItems(n))), []);
-
+// console.log(updatedEvents);
             _items.update(updatedEvents);
 
             resolve(true);
