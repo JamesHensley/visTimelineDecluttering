@@ -32,6 +32,7 @@ const item = (data) => {
         start: dateStart,
         end: dateEnd,
         group: data.groupId,
+        subgroup: undefined,
         type: type,
         // className: '',
         // style: '',
@@ -55,26 +56,41 @@ const timeLine = (props) => {
         return new Promise(resolve => {
             const grpItems = (grp) => _items.get().filter(f => f.group == grp.id);
 
-            const groupInfoFunc = (grp) => (event) => {
+            const groupInfoFunc = (grp, events) => {
                 const grpStart = Math.min(...grpItems(grp).filter(f => f.start).map(m => m.start.getTime()));
                 const grpEnd = Math.max(...grpItems(grp).filter(f => f.end).map(m => m.end.getTime()));
-                const grpDays = Math.round((grpEnd - grpStart) / oneDay);
+                const subGrpTemplate = () => Array.from(Array(Math.round((grpEnd - grpStart) / oneDay)));
+                const buildNewSubGrp = () => {
+                    const o = subGrpTemplate();
+                    subGroups.push(o);
+                    return o;
+                }
 
-                return 
+                const subGroups = [subGrpTemplate()];
+                events.forEach(event => {
+                    const eventOffset = ((event.start.getTime() - grpStart) / oneDay);
+                    const eventLength = Math.ceil((event.end.getTime() - event.start.getTime()) / oneDay);
+
+                    const found = subGroups.find(f => {
+                        return f.slice(eventOffset, eventOffset + eventLength).reduce((t, n) => t && n == undefined, true)
+                    }) ?? buildNewSubGrp();
+
+                    found.splice(eventOffset, eventLength, ...Array.from(Array(eventLength)).map(m => event.id));
+                    event.subgroup = subGroups.findIndex(f => f == found);
+                });
+
+                return events;
             }
 
-            _groups.get()
+            const ret = _groups.get()
             .filter(f => grpItems(f).length > 0)
-            .forEach(g => {
-                const grpX = groupInfoFunc(g);
+            .reduce((t,n) => [].concat.apply(t, groupInfoFunc(n, grpItems(n))), [])
 
-                const eventWidth = Math.round((item.end - item.start) / oneDay);
+            if (ret.length > 0) {
+                _items.update(ret);
+            }
 
-                console.log(grpDays)
-                // _items.get().filter(f => f.group == g.groupId)
-            })
-
-            resolve(true);
+            resolve(ret);
         })
     }
 

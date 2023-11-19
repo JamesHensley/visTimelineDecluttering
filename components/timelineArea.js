@@ -20,9 +20,11 @@ class timelineArea extends baseObj {
 
             this.ref.addGroups([ { id: '1', content: 'Group 1' } ])
             this.ref.addItems([
-                { id: 1, groupId: '1', content: 'item 1', dateStart: '2023-11-20', appType: 'event', appId: uuidService.uuid },
-                { id: 2, groupId: '1', content: 'item 2', dateStart: '2023-11-19', dateEnd: '2023-11-24', appType: 'range', appId: uuidService.uuid },
-                { id: 3, groupId: '1', content: 'item 3', dateStart: '2023-11-21', dateEnd: '2023-11-26', appType: 'range', appId: uuidService.uuid },
+                { id: 1, groupId: '1', content: 'item 1', dateStart: '2023-11-18', dateEnd: '2023-11-20', appType: 'range', appId: uuidService.uuid },
+                { id: 2, groupId: '1', content: 'item 2', dateStart: '2023-11-21', dateEnd: '2023-11-23', appType: 'range', appId: uuidService.uuid },
+                { id: 3, groupId: '1', content: 'item 3', dateStart: '2023-11-25', dateEnd: '2023-11-27', appType: 'range', appId: uuidService.uuid },
+                { id: 4, groupId: '1', content: 'item 4', dateStart: '2023-11-19', dateEnd: '2023-11-23', appType: 'range', appId: uuidService.uuid },
+                { id: 5, groupId: '1', content: 'item 5', dateStart: '2023-11-24', dateEnd: '2023-11-29', appType: 'range', appId: uuidService.uuid },
             ]);
         };
     }
