@@ -1,4 +1,3 @@
-import dateObj from '../classes/dateObj.js';
 import timelineFactory from '../factories/timelineFactory.js';
 import mediatorService from '../services/mediatorService.js';
 import uuidService from '../services/uuidService.js';
@@ -13,19 +12,35 @@ class timelineArea extends baseObj {
                 container: this.wrapper.querySelector('.componentContent'),
                 options: {
                     stack: false,
-                    stackSubgroups: false
+                    stackSubgroups: false,
+                    height: '100%',
+                    moveable: true
                 },
-                // readyCallBack: readyCallBack
             });
 
-            this.ref.addGroups([ { id: '1', content: 'Group 1' } ])
-            this.ref.addItems([
-                { id: 1, groupId: '1', content: 'item 1', dateStart: '2023-11-18', dateEnd: '2023-11-20', appType: 'range', appId: uuidService.uuid },
-                { id: 2, groupId: '1', content: 'item 2', dateStart: '2023-11-21', dateEnd: '2023-11-23', appType: 'range', appId: uuidService.uuid },
-                { id: 3, groupId: '1', content: 'item 3', dateStart: '2023-11-25', dateEnd: '2023-11-27', appType: 'range', appId: uuidService.uuid },
-                { id: 4, groupId: '1', content: 'item 4', dateStart: '2023-11-19', dateEnd: '2023-11-23', appType: 'range', appId: uuidService.uuid },
-                { id: 5, groupId: '1', content: 'item 5', dateStart: '2023-11-24', dateEnd: '2023-11-29', appType: 'range', appId: uuidService.uuid },
-            ]);
+            const groups = [
+                { id: '1', content: 'Group 1' },
+                { id: '2', content: 'Group 2' },
+                { id: '3', content: 'Group 3' }
+            ];
+
+            const items = Array.from(Array(Math.ceil(Math.random()) * 100).keys())
+            .map(m => {
+                const startDay = Math.floor(Math.random() * 25) + 1;
+                const endDay = startDay + 1 + Math.floor(Math.random() * 5);
+                return {
+                    id: `${m}`,
+                    groupId: groups[Math.floor(Math.random() * (groups.length - 1))]?.id,
+                    content: `item ${m}`,
+                    dateStart: `2023-11-${ `${startDay}`.padStart(2, '0') }`,
+                    dateEnd: `2023-11-${ `${endDay}`.padStart(2, '0') }`,
+                    appType: 'range',
+                    appId: uuidService.uuid
+                }
+            }).sort((a,b) => new Date(a.dateStart).getTime() > new Date(b.dateStart).getTime() ? 1 : (new Date(a.dateStart).getTime() < new Date(b.dateStart).getTime() ? -1 : 0));
+
+            this.ref.addGroups(groups);
+            this.ref.addItems(items);
         };
     }
 
